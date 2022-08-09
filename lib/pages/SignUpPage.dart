@@ -1,7 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_equal_for_default_values
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:todoproject/pages/home.dart';
+
+import 'SigninPage.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -11,6 +15,10 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  firebase_auth.FirebaseAuth firebaseAuth = firebase_auth.FirebaseAuth.instance;
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  bool circularProgress = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,11 +58,11 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 15,
               ),
-              textitem('Email'),
+              textitem('Email', _emailController),
               SizedBox(
                 height: 15,
               ),
-              textitem('Password'),
+              textitem('Password', _passwordController),
               SizedBox(
                 height: 15,
               ),
@@ -76,12 +84,23 @@ class _SignUpPageState extends State<SignUpPage> {
                   SizedBox(
                     width: 5,
                   ),
-                  Text(
-                    'Login',
-                    style: TextStyle(
+                  // add login link
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SigninPage()));
+                    },
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold),
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               )
@@ -91,18 +110,51 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget button() {
-    return Container(
-      height: 50,
-      width: MediaQuery.of(context).size.width - 90,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-      ),
-      child: Center(
-        child: Text(
-          'Sign Up',
-          style: TextStyle(
-              color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          circularProgress = true;
+        });
+        try {
+          firebase_auth.UserCredential userCredential =
+              await firebaseAuth.createUserWithEmailAndPassword(
+                  email: _emailController.text,
+                  password: _passwordController.text);
+          setState(() {
+            circularProgress = false;
+          });
+          // ignore: use_build_context_synchronously
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (builder) => SigninPage()),
+              (route) => false);
+        } catch (e) {
+          final snackBar = SnackBar(
+            content: Text(e.toString()),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          setState(() {
+            circularProgress = false;
+          });
+        }
+      },
+      child: Container(
+        height: 50,
+        width: MediaQuery.of(context).size.width - 90,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+        ),
+        child: Center(
+          child: circularProgress
+              ? CircularProgressIndicator()
+              : Text(
+                  'Sign Up',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
         ),
       ),
     );
@@ -136,11 +188,13 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget textitem(String text) {
+  Widget textitem(String text, TextEditingController controller) {
     return Container(
         width: MediaQuery.of(context).size.width - 70,
         height: 60,
         child: TextFormField(
+          controller: controller,
+          style: TextStyle(color: Colors.white, fontSize: 17),
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.white, width: 2),
