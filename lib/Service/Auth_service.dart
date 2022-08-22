@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../pages/home.dart';
+import '../pages/HomePage.dart';
 
 class AuthClass {
   GoogleSignIn _googleSignIn = GoogleSignIn(

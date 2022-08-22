@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:todoproject/Service/Auth_service.dart';
-import 'package:todoproject/pages/home.dart';
+import 'package:todoproject/pages/HomePage.dart';
 
 import 'SigninPage.dart';
 
@@ -43,6 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 20,
               ),
+              // signup with google
               buttonitem('assets/google.svg', "continue with Google", 25,
                   () async {
                 await authClass.googleSignIn(context);
@@ -50,6 +51,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 15,
               ),
+              // signup with phone number
               buttonitem('assets/phone.svg', "continue with Phone", 25, () {}),
               SizedBox(
                 height: 15,
@@ -64,14 +66,17 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 15,
               ),
+              // Email TextField
               textitem('Email', _emailController),
               SizedBox(
                 height: 15,
               ),
+              // Password TextField
               textitem('Password', _passwordController),
               SizedBox(
                 height: 15,
               ),
+              // Sign Up Button
               button(),
               SizedBox(
                 height: 15,

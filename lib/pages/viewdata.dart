@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable, prefer_if_null_operators
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,20 +7,45 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todoproject/pages/HomePage.dart';
 
-class Addtodo extends StatefulWidget {
-  const Addtodo({Key? key}) : super(key: key);
+class viewdata extends StatefulWidget {
+  const viewdata({Key? key, required this.document, required this.id})
+      : super(key: key);
+  final String id;
+
+  final Map<String, dynamic> document;
 
   @override
-  State<Addtodo> createState() => _AddtodoState();
+  State<viewdata> createState() => _viewdataState();
 }
 
-class _AddtodoState extends State<Addtodo> {
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
+class _viewdataState extends State<viewdata> {
+  // set the state for type and category
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late String type;
+  late String category;
+  bool edit = false;
 
-// set the state for type and category
-  String type = "";
-  String category = "";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    String title = widget.document['title'] == null
+        ? "Hey there"
+        : widget.document['title'];
+    _titleController = TextEditingController(text: title);
+
+    String description = widget.document['description'] == null
+        ? "no description"
+        : widget.document['description'];
+    _descriptionController = TextEditingController(text: description);
+
+    type =
+        widget.document['type'] == null ? "Hey there" : widget.document['type'];
+    category = widget.document['category'] == null
+        ? "no task"
+        : widget.document['category'];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,20 +63,64 @@ class _AddtodoState extends State<Addtodo> {
             SizedBox(
               height: 30,
             ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.arrow_left,
-                color: Colors.white,
-                size: 30,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // back button
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    CupertinoIcons.arrow_left,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+                // edit button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          edit = !edit;
+                        });
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        color: edit ? Colors.red : Colors.white,
+                        size: 30,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        // delete the task
+
+                        FirebaseFirestore.instance
+                            .collection("Todo")
+                            .doc(widget.id)
+                            .delete()
+                            .then((value) {
+                          Navigator.pop(context);
+                        });
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                        size: 30,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Create",
+                  Text(edit ? "Edit " : "View",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 33,
@@ -60,7 +129,7 @@ class _AddtodoState extends State<Addtodo> {
                   SizedBox(
                     height: 8,
                   ),
-                  Text("New TODO",
+                  Text("Your Task",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 33,
@@ -130,7 +199,7 @@ class _AddtodoState extends State<Addtodo> {
                   SizedBox(
                     height: 50,
                   ),
-                  button(),
+                  edit ? button() : Container(),
                   SizedBox(
                     height: 20,
                   ),
@@ -147,7 +216,7 @@ class _AddtodoState extends State<Addtodo> {
     return InkWell(
       // add todo to database
       onTap: () {
-        FirebaseFirestore.instance.collection("Todo").add({
+        FirebaseFirestore.instance.collection("Todo").doc(widget.id).update({
           "title": _titleController.text,
           "description": _descriptionController.text,
           "task": type,
@@ -173,7 +242,7 @@ class _AddtodoState extends State<Addtodo> {
         ),
         child: Center(
           child: Text(
-            "Add Todo",
+            "Update Todo",
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -198,6 +267,7 @@ class _AddtodoState extends State<Addtodo> {
       child: TextFormField(
         // push to firebase and add todo to database
         controller: _titleController,
+        enabled: edit,
         style:
             TextStyle(color: Color.fromARGB(255, 255, 252, 252), fontSize: 17),
         decoration: InputDecoration(
@@ -226,6 +296,8 @@ class _AddtodoState extends State<Addtodo> {
       child: TextFormField(
         // push to firebase and add todo to database
         controller: _descriptionController,
+        enabled: edit,
+
         style:
             TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontSize: 17),
         maxLines: null,
@@ -244,11 +316,13 @@ class _AddtodoState extends State<Addtodo> {
 
   Widget taskselected(String label, int color) {
     return InkWell(
-      onTap: () {
-        setState(() {
-          type = label;
-        });
-      },
+      onTap: edit
+          ? () {
+              setState(() {
+                type = label;
+              });
+            }
+          : null,
       child: Chip(
         backgroundColor: type == label ? Colors.white : Color(color),
         shape: RoundedRectangleBorder(
@@ -268,11 +342,13 @@ class _AddtodoState extends State<Addtodo> {
 
   Widget Categoryselected(String label, int color) {
     return InkWell(
-      onTap: () {
-        setState(() {
-          category = label;
-        });
-      },
+      onTap: edit
+          ? () {
+              setState(() {
+                category = label;
+              });
+            }
+          : null,
       child: Chip(
         backgroundColor: category == label ? Colors.white : Color(color),
         shape: RoundedRectangleBorder(

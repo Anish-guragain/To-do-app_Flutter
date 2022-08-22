@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 import '../Service/Auth_service.dart';
 import 'SignUpPage.dart';
-import 'home.dart';
+import 'HomePage.dart';
 
 class SigninPage extends StatefulWidget {
   const SigninPage({Key? key}) : super(key: key);
@@ -42,12 +42,14 @@ class _SigninPageState extends State<SigninPage> {
               SizedBox(
                 height: 20,
               ),
+              // sign in with google
               buttonitem('assets/google.svg', "continue with Google", 25, () {
                 authClass.googleSignIn(context);
               }),
               SizedBox(
                 height: 15,
               ),
+              // sign in with phone number
               buttonitem('assets/phone.svg', "continue with Phone", 25, () {}),
               SizedBox(
                 height: 15,
@@ -62,10 +64,12 @@ class _SigninPageState extends State<SigninPage> {
               SizedBox(
                 height: 15,
               ),
+              // sign in with email
               textitem('Email', _emailController),
               SizedBox(
                 height: 15,
               ),
+              // sign in with password
               textitem('Password', _passwordController),
               SizedBox(
                 height: 15,
@@ -80,6 +84,7 @@ class _SigninPageState extends State<SigninPage> {
               SizedBox(
                 height: 15,
               ),
+              // sign in button
               button(),
               SizedBox(
                 height: 15,
