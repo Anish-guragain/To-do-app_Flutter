@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todoproject/pages/HomePage.dart';
+
+import '../Service/Auth_service.dart';
 
 class Addtodo extends StatefulWidget {
   const Addtodo({Key? key}) : super(key: key);
@@ -17,10 +20,12 @@ class Addtodo extends StatefulWidget {
 class _AddtodoState extends State<Addtodo> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
+  AuthClass authClass = AuthClass();
 
 // set the state for type and category
   String type = "";
   String category = "";
+  String uid = " ";
 
   @override
   Widget build(BuildContext context) {
@@ -146,8 +151,14 @@ class _AddtodoState extends State<Addtodo> {
   Widget button() {
     return InkWell(
       // add todo to database
-      onTap: () {
-        FirebaseFirestore.instance.collection("Todo").add({
+
+      onTap: () async {
+        final uid = authClass.getCurrentUID();
+        FirebaseFirestore.instance
+            .collection("UserData")
+            .doc(uid)
+            .collection("Todo")
+            .add({
           "title": _titleController.text,
           "description": _descriptionController.text,
           "task": type,

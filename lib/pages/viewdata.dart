@@ -7,6 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todoproject/pages/HomePage.dart';
 
+import '../Service/Auth_service.dart';
+
 class viewdata extends StatefulWidget {
   const viewdata({Key? key, required this.document, required this.id})
       : super(key: key);
@@ -19,6 +21,8 @@ class viewdata extends StatefulWidget {
 }
 
 class _viewdataState extends State<viewdata> {
+  AuthClass authClass = AuthClass();
+
   // set the state for type and category
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
@@ -49,6 +53,8 @@ class _viewdataState extends State<viewdata> {
 
   @override
   Widget build(BuildContext context) {
+    final uid = authClass.getCurrentUID();
+
     return Scaffold(
         body: Container(
       height: MediaQuery.of(context).size.height,
@@ -98,6 +104,8 @@ class _viewdataState extends State<viewdata> {
                         // delete the task
 
                         FirebaseFirestore.instance
+                            .collection("UserData")
+                            .doc(uid)
                             .collection("Todo")
                             .doc(widget.id)
                             .delete()
@@ -213,10 +221,17 @@ class _viewdataState extends State<viewdata> {
   }
 
   Widget button() {
+    final uid = authClass.getCurrentUID();
+
     return InkWell(
       // add todo to database
       onTap: () {
-        FirebaseFirestore.instance.collection("Todo").doc(widget.id).update({
+        FirebaseFirestore.instance
+            .collection("UserData")
+            .doc(uid)
+            .collection("Todo")
+            .doc(widget.id)
+            .update({
           "title": _titleController.text,
           "description": _descriptionController.text,
           "task": type,

@@ -24,6 +24,8 @@ class _homeState extends State<home> {
 
   @override
   Widget build(BuildContext context) {
+    final uid = authClass.getCurrentUID();
+
     return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
@@ -63,8 +65,10 @@ class _homeState extends State<home> {
                             onPressed: () {
                               // delete the task
 
-                              var instance =
-                                  FirebaseFirestore.instance.collection("Todo");
+                              var instance = FirebaseFirestore.instance
+                                  .collection("UserData")
+                                  .doc(uid)
+                                  .collection("Todo");
                               instance.doc(selected[0].id).delete();
                             },
                             icon: Icon(
@@ -132,9 +136,13 @@ class _homeState extends State<home> {
           child: Column(
             children: [
               // dynamic card for todo
+
               StreamBuilder<Object>(
-                  stream:
-                      FirebaseFirestore.instance.collection('Todo').snapshots(),
+                  stream: FirebaseFirestore.instance
+                      .collection("UserData")
+                      .doc(uid)
+                      .collection("Todo")
+                      .snapshots(),
                   builder: (context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
