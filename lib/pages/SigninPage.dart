@@ -49,11 +49,7 @@ class _SigninPageState extends State<SigninPage> {
               SizedBox(
                 height: 15,
               ),
-              // sign in with phone number
-              buttonitem('assets/phone.svg', "continue with Phone", 25, () {}),
-              SizedBox(
-                height: 15,
-              ),
+
               Text(
                 'OR',
                 style: TextStyle(

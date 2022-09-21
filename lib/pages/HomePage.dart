@@ -3,7 +3,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:todoproject/pages/AddTodo.dart';
-import 'package:todoproject/pages/SignUpPage.dart';
 import 'package:todoproject/pages/TodoCard.dart';
 import 'package:todoproject/pages/viewdata.dart';
 import '../Service/Auth_service.dart';
@@ -31,7 +30,7 @@ class _homeState extends State<home> {
         appBar: AppBar(
           backgroundColor: Colors.black87,
           title: Text(
-            "Today's Schedule",
+            "Today's ToDo",
             style: TextStyle(
               fontSize: 34,
               fontWeight: FontWeight.bold,
@@ -120,9 +119,6 @@ class _homeState extends State<home> {
                   ),
                 ),
                 label: ''),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings, color: Colors.white, size: 30),
-                label: ''),
           ],
           onTap: (int index) {
             print(index);
@@ -202,7 +198,7 @@ class _homeState extends State<home> {
                                     ? ''
                                     : document['title'],
                                 color: iconcolor,
-                                time: '10 am',
+                                time: '1 pm',
                                 check: selected[index].checkvalue,
                                 iconbgcolor: Colors.white,
                                 iconData: icondata,

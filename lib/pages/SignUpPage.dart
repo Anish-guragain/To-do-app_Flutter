@@ -51,11 +51,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 15,
               ),
-              // signup with phone number
-              buttonitem('assets/phone.svg', "continue with Phone", 25, () {}),
-              SizedBox(
-                height: 15,
-              ),
+             
               Text(
                 'OR',
                 style: TextStyle(
